@@ -9,4 +9,4 @@ const db = {
 }
 const database = new Pool(db);
 
-module.exports = database;
+module.exports = { database };

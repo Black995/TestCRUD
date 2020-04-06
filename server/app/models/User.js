@@ -1,10 +1,9 @@
 'use strict';
-const { database } = require('../config/db.config.js');
+const { database } = require('../config/db.config');
 
 class User{
   
   create(username, email, password){
-
     return new Promise((resolve, reject) => {
 
           database.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id', [username, email, password])
@@ -18,13 +17,11 @@ class User{
 
   getUserById(id){
 		return new Promise((resolve, reject) => {
-			const query = 'SELECT * FROM users WHERE id = $1'
-			const value = [id]
 
-			database.query(query, value)
+			database.query('SELECT * FROM users WHERE id = $1', [id])
 		    .then(response => {
-		    	const product = response.rows[0]
-		    	resolve(product)
+		    	const user = response.rows[0]
+		    	resolve(user)
 		    })
         .catch(e => console.error(e.stack))
 		})
@@ -32,16 +29,33 @@ class User{
 
   getAllUsers(){
 		return new Promise((resolve, reject) => {
-			const query = 'SELECT * FROM users ORDER BY id DESC'
       
-      database.query(query)
+      database.query('SELECT * FROM users ORDER BY id DESC')
 			  .then(function(response){
-				  const products = response.rows
-				  resolve(products)
+				  const user = response.rows
+				  resolve(user)
 			  })
 			  .catch(e => console.error(e.stack))
 		})
 	}
+
+	updateUser(id, username, email, password){
+		return new Promise((resolve, reject) => {
+
+			database.query('UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4', [username, email, password, id])
+				.then(function(){resolve(true)})
+        .catch(e => console.error(e.stack))
+		})
+	}
+	
+	deleteUser(id){
+		return new Promise((resolve, reject) => {
+
+			database.query('DELETE FROM users WHERE id = $1', [id])
+				.then(function(){resolve(true)})
+        .catch(e => console.error(e.stack))
+		})
+  }
   
 }
 
